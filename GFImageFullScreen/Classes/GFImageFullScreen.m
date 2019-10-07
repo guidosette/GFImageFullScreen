@@ -16,6 +16,7 @@
 @property (strong, nonatomic) IBOutlet UIView *viewBackground;
 @property CGRect screenRect;
 @property CGRect prevFrame;
+@property UIImageView* prevImageView;
 @property float animationDuration;
 @property float margin;
 
@@ -25,10 +26,12 @@
 @property (nonatomic, assign) float MIN_OFFSET;
 @property (nonatomic, assign) float alphaBackground;
 
+@property bool customLayout;
 @property float borderWidth;
 @property float cornerRadius;
 @property (nonatomic, strong) UIColor* borderColor;
 @property (nonatomic, strong) UIColor* backgroundColor;
+
 
 @end
 
@@ -80,6 +83,7 @@
 	_MIN_OFFSET = 100;
 	_alphaBackground = 0.95;
 	
+	_customLayout = false;
 	_margin = 20;
 	_borderWidth = 4;
 	_cornerRadius = -1;
@@ -95,13 +99,14 @@
 	CGPoint point = [imageView.superview convertPoint:imageView.frame.origin toView:nil];
 	CGRect rect = CGRectMake(point.x, point.y, imageView.bounds.size.width, imageView.bounds.size.height);
 	_prevFrame = rect;
+	_prevImageView = imageView;
 	_imageViewFullScreen.frame = rect;
 	_imageViewFullScreen.image = imageView.image;
-	_imageViewFullScreen.layer.cornerRadius = imageView.layer.cornerRadius;
+	_imageViewFullScreen.layer.cornerRadius = _customLayout ? (_cornerRadius == -1 ? rect.size.width/2 : _cornerRadius) : imageView.layer.cornerRadius;
 	_imageViewFullScreen.layer.masksToBounds = true;
-	_imageViewFullScreen.layer.borderWidth = _borderWidth;
-	_imageViewFullScreen.layer.borderColor = _borderColor.CGColor;
-	_imageViewFullScreen.backgroundColor = _backgroundColor;
+	_imageViewFullScreen.layer.borderWidth = _customLayout ? _borderWidth : imageView.layer.borderWidth;
+	_imageViewFullScreen.layer.borderColor = _customLayout ? _borderColor.CGColor : imageView.layer.borderColor;
+	_imageViewFullScreen.backgroundColor = _customLayout ? _backgroundColor : imageView.backgroundColor;
 }
 
 + (void)showFromImageView:(UIImageView*)imageView {
@@ -123,7 +128,9 @@
 		[keyWindow addSubview:view];
 		float width = [UIScreen mainScreen].bounds.size.width - view.margin*2.0f;
 		CGRect rect = CGRectMake(view.margin, [UIScreen mainScreen].bounds.size.height/2.0f - width/2.0f, width, width);
-		view.imageViewFullScreen.layer.cornerRadius = width/2.0f;
+//		view.imageViewFullScreen.layer.cornerRadius = width/2.0f;
+		view.imageViewFullScreen.layer.cornerRadius = view.customLayout ? (view.cornerRadius == -1 ? width/2 : view.cornerRadius) : imageView.layer.cornerRadius;
+
 		[view.imageViewFullScreen setFrame:rect];
 		[view.imageViewFullScreen layoutIfNeeded];
 	}
@@ -138,11 +145,13 @@
 	}
 	_isAnimation = true;
 	[self.layer removeAllAnimations];
+	GFImageFullScreen *view = [GFImageFullScreen privateInstance];
 	[UIView animateWithDuration:_animationDuration
 						  delay:0.0
 						options: UIViewAnimationOptionCurveEaseInOut
 					 animations:^{
-		self->_imageViewFullScreen.layer.cornerRadius = self->_prevFrame.size.width/2;
+//		self->_imageViewFullScreen.layer.cornerRadius = self->_prevFrame.size.width/2;
+		view.imageViewFullScreen.layer.cornerRadius = view.customLayout ? (view.cornerRadius == -1 ? self->_prevFrame.size.width/2 : view.cornerRadius) : self->_prevImageView.layer.cornerRadius;
 		[self->_imageViewFullScreen setFrame:self->_prevFrame];
 		[self->_imageViewFullScreen layoutIfNeeded];
 		[self layoutIfNeeded];
@@ -210,6 +219,11 @@
 }
 
 #pragma mrk - Customizable
+
++ (void)setCustomLayout:(bool)value {
+	GFImageFullScreen *instance = [GFImageFullScreen privateInstance];
+	instance.customLayout =  value;
+}
 
 + (void)setBackgroundColor:(UIColor*)color {
 	GFImageFullScreen *instance = [GFImageFullScreen privateInstance];

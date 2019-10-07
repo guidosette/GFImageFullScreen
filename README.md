@@ -7,6 +7,8 @@
 
 ## Example
 
+![Alt Text](https://github.com/guidosette/GFImageFullScreen/blob/master/photo.gif)
+
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
 
 ## Requirements
@@ -19,6 +21,20 @@ it, simply add the following line to your Podfile:
 ```ruby
 pod 'GFImageFullScreen'
 ```
+
+## How to use
+	#import "GFImageFullScreen.h"
+
+	[GFImageFullScreen showFromImageView:_image];
+	
+## Settings
+	//	image
+	[GFImageFullScreen setCornerRadius:-1];
+	[GFImageFullScreen setBackgroundColor:[UIColor clearColor]];
+	[GFImageFullScreen setMargin:20];
+	//	border
+	[GFImageFullScreen setBorderColor:[UIColor whiteColor]];
+	[GFImageFullScreen setBorderWidth:4];
 
 ## Author
 

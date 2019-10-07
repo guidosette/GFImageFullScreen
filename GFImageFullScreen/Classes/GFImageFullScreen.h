@@ -15,6 +15,12 @@
 #pragma mrk - Customizable
 
 /**
+ Set cutom layout mode.
+ @param value A Boolean that determinate if image get layout from image source or not.
+ */
++ (void)setCustomLayout:(bool)value;
+
+/**
  Set background color
  @param color background color of image. default: clearColor
  */
