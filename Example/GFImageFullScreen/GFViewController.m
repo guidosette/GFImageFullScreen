@@ -7,23 +7,102 @@
 //
 
 #import "GFViewController.h"
+#import "GFImageFullScreen.h"
 
 @interface GFViewController ()
+@property (weak, nonatomic) IBOutlet UIImageView *image;
+
+@property (strong, nonatomic) IBOutlet UISlider *imageSize;
+@property (strong, nonatomic) IBOutlet UISlider *borderWidth;
+@property (strong, nonatomic) IBOutlet UISwitch *imageOn;
+@property (strong, nonatomic) IBOutlet UILabel *borderWidthLabel;
+@property (strong, nonatomic) IBOutlet UILabel *imageSizeLabel;
+@property (strong, nonatomic) IBOutlet UIView *colorBackgroundView;
+@property (strong, nonatomic) IBOutlet UIView *colorSpinnerStrokeView;
 
 @end
 
-@implementation GFViewController
+@implementation GFViewController {
+	UIColor* colorBackground;
+	UIColor* colorBorder;
+	float margin;
+	
+	bool settingColorCircleBackground;
+
+}
 
 - (void)viewDidLoad
 {
-    [super viewDidLoad];
+	[super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+	
+	_image.userInteractionEnabled = true;
+	[_image addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showImageToFullScreen)]];
+	
+	[_imageSize addTarget:self action:@selector(onChangeImageSize:) forControlEvents:UIControlEventValueChanged];
+	[_borderWidth addTarget:self action:@selector(onChangeBorderWidth:) forControlEvents:UIControlEventValueChanged];
+	[_imageSize addTarget:self action:@selector(onChangeImageSize:) forControlEvents:UIControlEventValueChanged];
+	_imageSizeLabel.text = [NSString stringWithFormat:@"%.0f", _imageSize.value];
+	_borderWidthLabel.text = [NSString stringWithFormat:@"%.0f", _borderWidth.value];
+	colorBackground = [UIColor whiteColor];
+	colorBorder = [UIColor grayColor];
+	margin = 20;
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+-(void)showImageToFullScreen {
+	[self setSettings];
+	[GFImageFullScreen showFromImageView:_image];
+}
+
+- (void)setSettings {
+//	image
+	//	[GFImageFullScreen setCircleSize:_circleSize.value];
+//	background
+	[GFImageFullScreen setMargin:_imageSize.value];
+	[GFImageFullScreen setBackgroundColor:colorBackground];
+//	border
+	[GFImageFullScreen setBorderColor:colorBorder];
+	[GFImageFullScreen setBorderWidth:_borderWidth.value];
+}
+
+- (IBAction)onChangeImageSize:(UISlider *)sender {
+	_imageSizeLabel.text = [NSString stringWithFormat:@"%.0f", sender.value];
+}
+
+- (IBAction)onChangeBorderWidth:(UISlider *)sender {
+	_borderWidthLabel.text = [NSString stringWithFormat:@"%.0f", sender.value];
+}
+
+- (IBAction)chooseColor:(id)sender {
+    FCColorPickerViewController *colorPicker = [FCColorPickerViewController colorPicker];
+	if (((UIView*)sender).tag == 1) {
+		colorPicker.color = colorBackground;
+		settingColorCircleBackground = true;
+	} else {
+		colorPicker.color = colorBorder;
+		settingColorCircleBackground = false;
+	}
+    colorPicker.delegate = self;
+    
+    [colorPicker setModalPresentationStyle:UIModalPresentationFormSheet];
+    [self presentViewController:colorPicker animated:YES completion:nil];
+}
+
+#pragma mark - FCColorPickerViewControllerDelegate Methods
+
+- (void)colorPickerViewController:(FCColorPickerViewController *)colorPicker didSelectColor:(UIColor *)color {
+	if (settingColorCircleBackground) {
+		colorBackground = color;
+		_colorBackgroundView.backgroundColor = color;
+	} else {
+		colorBorder = color;
+		_colorSpinnerStrokeView.backgroundColor = color;
+	}
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)colorPickerViewControllerDidCancel:(FCColorPickerViewController *)colorPicker {
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

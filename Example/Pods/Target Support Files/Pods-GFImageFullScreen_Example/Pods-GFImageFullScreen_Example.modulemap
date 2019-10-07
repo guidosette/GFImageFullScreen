@@ -1,0 +1,6 @@
+framework module Pods_GFImageFullScreen_Example {
+  umbrella header "Pods-GFImageFullScreen_Example-umbrella.h"
+
+  export *
+  module * { export * }
+}

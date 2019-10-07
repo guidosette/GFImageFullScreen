@@ -1,0 +1,6 @@
+framework module GFImageFullScreen {
+  umbrella header "GFImageFullScreen-umbrella.h"
+
+  export *
+  module * { export * }
+}

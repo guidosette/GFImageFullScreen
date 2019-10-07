@@ -7,7 +7,8 @@
 //
 
 @import UIKit;
+#import "FCColorPickerViewController.h"
 
-@interface GFViewController : UIViewController
+@interface GFViewController : UIViewController<FCColorPickerViewControllerDelegate>
 
 @end
