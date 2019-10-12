@@ -26,7 +26,7 @@ Helpful to show image fullscreen with animation. You can customizable it.
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'guidosette' => 'guido.fanfani7@gmail.com' }
   s.source           = { :git => 'https://github.com/guidosette/GFImageFullScreen.git', :tag => s.version.to_s }
-  # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
+	s.social_media_url = 'https://twitter.com/Guidosette'
 
   s.ios.deployment_target = '9.3'
 
